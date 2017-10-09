@@ -1,0 +1,13 @@
+0,en-US,2017-01-01,-1,0,1,R1,DATA,test free text,1,<genxml><textbox><name>N1</name></textbox><lang><genxml><textbox><lname>Nl1</lname></textbox></genxml></lang></genxml>,0
+0,en-US,2017-01-01,-1,0,1,R2,DATA,free,1,<genxml><textbox><name>N2</name></textbox><lang><genxml><textbox><lname>Nl2</lname></textbox></genxml></lang></genxml>,0
+0,en-US,2017-01-01,-1,0,1,R3,DATA,text,1,<genxml><textbox><name>N3</name></textbox><lang><genxml><textbox><lname>Nl3</lname></textbox></genxml></lang></genxml>,0
+0,en-US,2017-01-01,-1,0,1,R4,DATA,,1,<genxml><textbox><name>N4</name></textbox><lang><genxml><textbox><lname>Nl4</lname></textbox></genxml></lang></genxml>,0
+0,en-US,2017-01-01,-1,0,1,R5,DATA,,1,<genxml><textbox><name>N5</name></textbox><lang><genxml><textbox><lname>Nl5</lname></textbox></genxml></lang></genxml>,0
+0,en-US,2017-01-01,-1,0,1,R6,DATA,,1,<genxml><textbox><name>N6</name></textbox><lang><genxml><textbox><lname>Nl6</lname></textbox></genxml></lang></genxml>,0
+
+1,fr-FR,2017-01-01,-1,0,1,R1,DATA,test free text,1,<genxml><textbox><name>N1</name></textbox><lang><genxml><textbox><lname>Nlf1</lname></textbox></genxml></lang></genxml>,0
+2,fr-FR,2017-01-01,-1,0,1,R2,DATA,free,1,<genxml><textbox><name>N2</name></textbox><lang><genxml><textbox><lname>Nlf2</lname></textbox></genxml></lang></genxml>,0
+3,fr-FR,2017-01-01,-1,0,1,R3,DATA,text,1,<genxml><textbox><name>N3</name></textbox><lang><genxml><textbox><lname>Nlf3</lname></textbox></genxml></lang></genxml>,0
+4,fr-FR,2017-01-01,-1,0,1,R4,DATA,,1,<genxml><textbox><name>N4</name></textbox><lang><genxml><textbox><lname>Nlf4</lname></textbox></genxml></lang></genxml>,0
+5,fr-FR,2017-01-01,-1,0,1,R5,DATA,,1,<genxml><textbox><name>N5</name></textbox><lang><genxml><textbox><lname>Nlf5</lname></textbox></genxml></lang></genxml>,0
+6,fr-FR,2017-01-01,-1,0,1,R6,DATA,,1,<genxml><textbox><name>N6</name></textbox><lang><genxml><textbox><lname>Nlf6</lname></textbox></genxml></lang></genxml>,0

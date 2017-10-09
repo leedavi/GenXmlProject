@@ -1,0 +1,11 @@
+GenXmlSQLprovider/bin/
+GenXmlSQLprovider/obj/
+NBrightXmlDBcmd/App_Data/db1/
+NBrightXmlDBcmd/bin/
+NBrightXmlDBcmd/obj/
+GenXmlDB/.vs/
+GenXmlDB/bin/
+GenXmlDB/obj/
+NBrightDBreezeProvider/bin/Debug/netcoreapp1.1/GenXmlDBreezeProvider.deps.json
+NBrightDBreezeProvider/bin/
+NBrightDBreezeProvider/obj/
