@@ -167,6 +167,7 @@ namespace NBright.GenXmlDB
                 catch (Exception ex)
                 {
                     // ignore
+                    Console.WriteLine(ex.Message);
                 }
 
 
@@ -192,6 +193,7 @@ namespace NBright.GenXmlDB
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     return "XML READ ERROR";
                 }
             }
@@ -221,6 +223,7 @@ namespace NBright.GenXmlDB
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     return "XML READ ERROR";
                 }
             }
@@ -243,6 +246,7 @@ namespace NBright.GenXmlDB
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     return 0;
                 }
             }
@@ -265,6 +269,7 @@ namespace NBright.GenXmlDB
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     return 0;
                 }
             }
@@ -303,6 +308,7 @@ namespace NBright.GenXmlDB
             catch (Exception ex)
             {
                 // ignore
+                Console.WriteLine(ex.Message);
             }
 
         }

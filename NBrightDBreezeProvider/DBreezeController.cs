@@ -8,7 +8,7 @@ using NBright.GenXmlDB;
 
 namespace GenXmlDBreezeProvider
 {
-    public class DBreezeController : IDataBaseInterface
+    public class DBreezeController : DataBaseContainer, IDataBaseInterface
     {
         DBreezeEngine engine = null;
 
@@ -30,7 +30,7 @@ namespace GenXmlDBreezeProvider
 
         public override void Connect(string XmlConfig)
         {
-            var nbi = new NBrightInfo();
+            NBrightInfo nbi = new NBrightInfo();
             nbi.XmlString = XmlConfig;
 
             engine = new DBreezeEngine(nbi.GetXmlProperty("genxml/provider/dbpath"));
@@ -301,6 +301,11 @@ namespace GenXmlDBreezeProvider
             return GetDataList(tableCode, DBreezeIdx.idx_ModuleId, moduleId, lang);
         }
 
+        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
+        {
+            return GetListByPortalId(tableCode, portalId);
+        }
+
         public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
         {
             return GetDataList(tableCode, DBreezeIdx.idx_PortalId, portalId, lang);
@@ -375,12 +380,6 @@ namespace GenXmlDBreezeProvider
                 t.RemoveAllKeys("TS_" + tableCode, true);
             }
         }
-
-
-
-
         #endregion
-
-
     }
 }

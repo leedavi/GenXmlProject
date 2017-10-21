@@ -12,7 +12,7 @@ using System.Runtime.Loader;
 
 namespace GenXmlSQLprovider
 {
-    public class SqlController : IDataBaseInterface
+    public class SqlController : DataBaseContainer, IDataBaseInterface
     {
 
         protected string ConnectionString { get; set; }
@@ -37,11 +37,6 @@ namespace GenXmlSQLprovider
                 connection.Open();
             }
             CreateTable("TEST1");
-        }
-
-        public override void Disconnect()
-        {
-           
         }
 
         #region "Base DB Methods"
@@ -77,7 +72,7 @@ namespace GenXmlSQLprovider
             {
                 throw ex;
             }
-            return null;
+            //return null;
         }
 
         public override NBrightInfo GetDataById(string tableCode, long itemId, string lang = "")
@@ -90,7 +85,7 @@ namespace GenXmlSQLprovider
             {
                 throw ex;
             }
-            return null;
+            //return null;
         }
 
         public override List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang = "")
@@ -133,6 +128,10 @@ namespace GenXmlSQLprovider
             return new List<NBrightInfo>();
         }
 
+        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
+        {
+            return GetListByPortalId(tableCode, portalId);
+        }
         public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
         {
             return new List<NBrightInfo>();
@@ -308,6 +307,7 @@ namespace GenXmlSQLprovider
             catch (Exception ex)
             {
                 //LogException("Failed to ExecuteNonQuery for " + procedureName, ex, parameters);  
+                Console.WriteLine(ex.Message);
                 throw;
             }
 
@@ -334,6 +334,7 @@ namespace GenXmlSQLprovider
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //LogException("Failed to ExecuteScalar for " + procedureName, ex, parameters);  
                 throw;
             }
@@ -360,6 +361,7 @@ namespace GenXmlSQLprovider
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 //LogException("Failed to GetDataReader for " + procedureName, ex, parameters);  
                 throw;
             }

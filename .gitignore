@@ -9,3 +9,5 @@ GenXmlDB/obj/
 NBrightDBreezeProvider/bin/Debug/netcoreapp1.1/GenXmlDBreezeProvider.deps.json
 NBrightDBreezeProvider/bin/
 NBrightDBreezeProvider/obj/
+/.vs
+*.user
