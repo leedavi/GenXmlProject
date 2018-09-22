@@ -8,9 +8,9 @@ namespace NBrightXmlDBcmd
     class Program
     {
         //private static string project_root = @"D:\Projects\";
-        private static string project_root = @"C:\Users\Franck\Source\repos\GenXmlProject\";
+        private static string project_root = @"C:\DevAndCo\GenXmlProject\";
         //private static string test_sql_conn = @"Data Source=DCL-PC\SQLEXPRESS01;Initial Catalog=GenXmlDB;User ID=sa;Password=HsQ2A5pn";
-        private static string test_sql_conn = @"Data Source=.\REGULUS;Initial Catalog=A01DNN;User ID=dnnuser;Password=abc";
+        private static string test_sql_conn = @"Data Source=.\SQLExpress;Initial Catalog=GenXmlDB;User ID=sa;Password=millau12";
 
         static void Main(string[] args)
         {
@@ -142,7 +142,7 @@ namespace NBrightXmlDBcmd
                     nbd.ModuleId = Convert.ToInt32(sl[3]);
                     nbd.ParentItemId = Convert.ToInt32(sl[4]);
                     nbd.PortalId = Convert.ToInt32(sl[5]);
-                    nbd.Key = sl[6];
+                    nbd.KeyData = sl[6];
                     nbd.TableCode = sl[7];
                     nbd.TextData = sl[8];
                     nbd.UserId = Convert.ToInt32(sl[9]);
@@ -159,27 +159,28 @@ namespace NBrightXmlDBcmd
             var rtnList = dbCtrl.GetListByPortalId("DATA", 1);
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
             }
+
             Console.WriteLine("Get List DATALANG ----------------------------------- ");
             rtnList = dbCtrl.GetListByPortalId("DATALANG", 1);
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/lname") + Environment.NewLine);
             }
 
             Console.WriteLine("Get List fr-FR ----------------------------------- ");
             rtnList = dbCtrl.GetListByPortalId("DATA", 1, "fr-FR");
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
             }
 
             Console.WriteLine("Get List en-US ----------------------------------- ");
             rtnList = dbCtrl.GetListByPortalId("DATA", 1, "en-US");
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
             }
 
             Console.WriteLine("----------------------------------- ");
@@ -192,13 +193,13 @@ namespace NBrightXmlDBcmd
             rtnList = dbCtrl.GetListByPortalId("DATA", 1);
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
             }
             Console.WriteLine("Get List DATALANG ----------------------------------- ");
             rtnList = dbCtrl.GetListByPortalId("DATALANG", 1);
             foreach (var nbi1 in rtnList)
             {
-                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.Key + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/lname") + Environment.NewLine);
             }
 
 

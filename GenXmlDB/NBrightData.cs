@@ -14,7 +14,7 @@ namespace NBright.GenXmlDB
         public long PortalId { get; set; }
         public long ModuleId { get; set; }
         public string TableCode { get; set; }
-        public string Key { get; set; }
+        public string KeyData { get; set; }
         public DateTime ModifiedDate { get; set; }
         public string TextData { get; set; }
         public long XrefItemId { get; set; }
@@ -44,7 +44,7 @@ namespace NBright.GenXmlDB
             ModuleId = nbrightData.ModuleId;
             ParentItemId = nbrightData.ParentItemId;
             PortalId = nbrightData.PortalId;
-            Key = nbrightData.Key;
+            KeyData = nbrightData.KeyData;
             TableCode = nbrightData.TableCode;
             TextData = nbrightData.TextData;
             UserId = nbrightData.UserId;

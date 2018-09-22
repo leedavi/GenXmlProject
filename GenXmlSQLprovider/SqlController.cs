@@ -167,57 +167,17 @@ namespace GenXmlSQLprovider
 
             var nData = new NBrightData();
 
-            StringBuilder query = new StringBuilder();
-            query.Append("CREATE TABLE ");
-            query.Append(tableName);
-            query.Append(" ( ");
 
-            Type type = nData.GetType();
-            PropertyInfo[] properties = type.GetProperties();
+            var sqlquery = System.IO.File.ReadAllText("C:\\DevAndCo\\GenXmlProject\\GenXmlSQLprovider\\sql\\01.00.00.Install.sql");
+            sqlquery = sqlquery.Replace("{TableName}", tableName);
+            sqlquery = sqlquery.Replace("{databaseOwner}", "");
+            sqlquery = sqlquery.Replace("{objectQualifier}", "");
 
-            foreach (PropertyInfo property in properties)
-            {
-                var columnType = "nvarchar(max)";
+            Console.WriteLine("SQL: " + sqlquery);
 
+            SqlCommand sqlQuery = new SqlCommand(sqlquery, connection);
+            SqlDataReader reader = sqlQuery.ExecuteReader();
 
-                switch (property.Name)
-                {
-                    case "ItemId": case "PortalId": case "ModuleId": case "XrefItemId": case "ParentItemId":
-                        columnType = "int";
-                        break;
-                    case "XmlString":
-                        columnType = "xml";
-                        break;
-                    case "":
-                        columnType = "xml";
-                        break;
-                    default:
-                        columnType = "nvarchar(max)";
-                        break;
-                }
-
-
-                query.Append(property.Name);
-                query.Append(" ");
-                query.Append(columnType);
-                query.Append(", ");
-                Console.WriteLine("Name: " + property.Name);
-            }
-
-            Console.WriteLine("SQL: " + query.ToString());
-
-            //for (int i = 0; i < columnNames.Length; i++)
-            //{
-            //    query.Append(columnNames[i]);
-            //    query.Append(" ");
-            //    query.Append(columnTypes[i]);
-            //    query.Append(", ");
-            //}
-
-            //if (columnNames.Length > 1) { query.Length -= 2; }  //Remove trailing ", "
-            //query.Append(")");
-            //SqlCommand sqlQuery = new SqlCommand(query.ToString(), connection);
-            //SqlDataReader reader = sqlQuery.ExecuteReader();
         }
 
 

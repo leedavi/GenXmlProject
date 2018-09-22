@@ -146,9 +146,9 @@ namespace GenXmlDBreezeProvider
                         var UserIdIndex = new DBreeze.Objects.DBreezeIndex(DBreezeIdx.idx_UserId, nbData.UserId);
                         indexes.Add(UserIdIndex);
                     }
-                    if (nbData.Key != null && nbData.Key != "")
+                    if (nbData.KeyData != null && nbData.KeyData != "")
                     {
-                        var KeyIndex = new DBreeze.Objects.DBreezeIndex(DBreezeIdx.idx_Key, nbData.Key);
+                        var KeyIndex = new DBreeze.Objects.DBreezeIndex(DBreezeIdx.idx_Key, nbData.KeyData);
                         indexes.Add(KeyIndex);
                     }
                     if (nbData.Lang != null && nbData.Lang != "")

@@ -245,7 +245,7 @@ namespace NBright.GenXmlDB
         public static string ConvertToXmlItem(NBrightInfo nbrightInfo, bool withTextData = true)
         {
             // don't use serlization, becuase depending what is in the TextData field could make it fail.
-            var xmlOut = new StringBuilder("<item><itemid>" + nbrightInfo.ItemId.ToString("") + "</itemid><portalid>" + nbrightInfo.PortalId.ToString("") + "</portalid><moduleid>" + nbrightInfo.ModuleId.ToString("") + "</moduleid><xrefitemid>" + nbrightInfo.XrefItemId.ToString("") + "</xrefitemid><parentitemid>" + nbrightInfo.ParentItemId.ToString("") + "</parentitemid><tablecode>" + nbrightInfo.TableCode + "</tablecode><ref>" + nbrightInfo.Key + "</ref><lang>" + nbrightInfo.Lang + "</lang><userid>" + nbrightInfo.UserId.ToString("") + "</userid>" + nbrightInfo.XmlString);
+            var xmlOut = new StringBuilder("<item><itemid>" + nbrightInfo.ItemId.ToString("") + "</itemid><portalid>" + nbrightInfo.PortalId.ToString("") + "</portalid><moduleid>" + nbrightInfo.ModuleId.ToString("") + "</moduleid><xrefitemid>" + nbrightInfo.XrefItemId.ToString("") + "</xrefitemid><parentitemid>" + nbrightInfo.ParentItemId.ToString("") + "</parentitemid><tablecode>" + nbrightInfo.TableCode + "</tablecode><ref>" + nbrightInfo.KeyData + "</ref><lang>" + nbrightInfo.Lang + "</lang><userid>" + nbrightInfo.UserId.ToString("") + "</userid>" + nbrightInfo.XmlString);
             if (withTextData && nbrightInfo.TextData != null)
             {
                 xmlOut.Append("<textdata><![CDATA[" + nbrightInfo.TextData.Replace("<![CDATA[", "***CDATASTART***").Replace("]]>", "***CDATAEND***") + "]]></textdata>");
@@ -294,7 +294,7 @@ namespace NBright.GenXmlDB
 
                     //guidkey
                     selectSingleNode = nbrightInfo.XMLDoc.XPathSelectElement("item/ref");
-                    if (selectSingleNode != null) nbrightInfo.Key = selectSingleNode.Value;
+                    if (selectSingleNode != null) nbrightInfo.KeyData = selectSingleNode.Value;
 
                     //XmlData
                     selectSingleNode = nbrightInfo.XMLDoc.XPathSelectElement("item/genxml");
@@ -336,7 +336,7 @@ namespace NBright.GenXmlDB
             nbd.ModuleId = nbrightInfo.ModuleId;
             nbd.ParentItemId = nbrightInfo.ParentItemId;
             nbd.PortalId = nbrightInfo.PortalId;
-            nbd.Key = nbrightInfo.Key;
+            nbd.KeyData = nbrightInfo.KeyData;
             nbd.TableCode = nbrightInfo.TableCode;
             nbd.TextData = nbrightInfo.TextData;
             nbd.UserId = nbrightInfo.UserId;
@@ -375,7 +375,7 @@ namespace NBright.GenXmlDB
             nbrightInfo.ModuleId = nbrightData.ModuleId;
             nbrightInfo.ParentItemId = nbrightData.ParentItemId;
             nbrightInfo.PortalId = nbrightData.PortalId;
-            nbrightInfo.Key = nbrightData.Key;
+            nbrightInfo.KeyData = nbrightData.KeyData;
             nbrightInfo.TableCode = nbrightData.TableCode;
             nbrightInfo.TextData = nbrightData.TextData;
             nbrightInfo.UserId = nbrightData.UserId;
