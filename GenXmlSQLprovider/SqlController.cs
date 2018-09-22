@@ -164,24 +164,30 @@ namespace GenXmlSQLprovider
 
         private void CreateTable(string tableName)
         {
-
-            var nData = new NBrightData();
-
-
-            var sqlquery = System.IO.File.ReadAllText("C:\\DevAndCo\\GenXmlProject\\GenXmlSQLprovider\\sql\\01.00.00.Install.sql");
-            sqlquery = sqlquery.Replace("{TableName}", tableName);
-            sqlquery = sqlquery.Replace("{databaseOwner}", "");
-            sqlquery = sqlquery.Replace("{objectQualifier}", "");
-
-            Console.WriteLine("SQL: " + sqlquery);
-
-            SqlCommand sqlQuery = new SqlCommand(sqlquery, connection);
-            SqlDataReader reader = sqlQuery.ExecuteReader();
-
+            RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateDataTable.sql", tableName);
+            //RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateIdxTable.sql", tableName);
+            //RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateLangTable.sql", tableName);
         }
 
 
         #endregion
+
+        private void RunSqlFile(string filepathname,string tableName,string databaseOwner = "", string objectQualifier = "")
+        {
+            if (System.IO.File.Exists(filepathname))
+            {
+                var sqlquery = System.IO.File.ReadAllText(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateDataTable.sql");
+                sqlquery = sqlquery.Replace("{TableName}", tableName);
+                sqlquery = sqlquery.Replace("{databaseOwner}", "");
+                sqlquery = sqlquery.Replace("{objectQualifier}", "");
+                SqlCommand sqlQuery = new SqlCommand(sqlquery, connection);
+                sqlQuery.ExecuteNonQuery();
+            }
+
+        }
+
+
+
 
 
     }

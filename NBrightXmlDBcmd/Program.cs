@@ -8,9 +8,9 @@ namespace NBrightXmlDBcmd
     class Program
     {
         //private static string project_root = @"D:\Projects\";
-        private static string project_root = @"C:\DevAndCo\GenXmlProject\";
+        private static string project_root = @"D:\Projects\GenXmlProject\";
         //private static string test_sql_conn = @"Data Source=DCL-PC\SQLEXPRESS01;Initial Catalog=GenXmlDB;User ID=sa;Password=HsQ2A5pn";
-        private static string test_sql_conn = @"Data Source=.\SQLExpress;Initial Catalog=GenXmlDB;User ID=sa;Password=millau12";
+        private static string test_sql_conn = @"Data Source=.\SQLEXPRESS02;Initial Catalog=GenXmlDB;User ID=sa;Password=HsQ2A5pn";
 
         static void Main(string[] args)
         {
