@@ -9,6 +9,9 @@ using System.Data.Common;
 using System.Text;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.IO;
+using System.Data.SqlTypes;
+using System.Xml;
 
 namespace GenXmlSQLprovider
 {
@@ -16,12 +19,17 @@ namespace GenXmlSQLprovider
     {
 
         protected string ConnectionString { get; set; }
-        SqlConnection connection = null;
+
+        protected string SqlTableName { get; set; }
+        protected string databaseOwner { get; set; }
+        protected string objectQualifier { get; set; }
+
+        private BaseDataAccess BaseDA = null;
 
 
         public override void Connect(string XmlConfig)
         {
-            var nbi = new NBrightInfo();
+                        var nbi = new NBrightInfo();
             nbi.XmlString = XmlConfig;
 
             foreach (var nod in nbi.XMLDoc.XPathSelectElements("genxml/dependancy/*"))
@@ -31,12 +39,14 @@ namespace GenXmlSQLprovider
 
             ConnectionString = nbi.GetXmlProperty("genxml/provider/connectionstring");
 
-            connection = new SqlConnection(this.ConnectionString);
-            if (connection.State != ConnectionState.Open)
-            {
-                connection.Open();
-            }
-            CreateTable("TEST1");
+            SqlTableName = nbi.GetXmlProperty("genxml/provider/sqltablename");
+            objectQualifier = nbi.GetXmlProperty("genxml/provider/objectQualifier");
+            databaseOwner = nbi.GetXmlProperty("genxml/provider/databaseOwner");
+
+
+            BaseDA = new BaseDataAccess(this.ConnectionString);
+
+            CreateTable(SqlTableName);
         }
 
         #region "Base DB Methods"
@@ -45,7 +55,36 @@ namespace GenXmlSQLprovider
         {
             var lang = nbInfo.Lang;
             long rtnItemId = 0;
-      
+
+            var cmdText = "{databaseOwner}{objectQualifier}{TableName}_Update ";
+            cmdText = replaceSqlTokens(cmdText);
+
+            SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+            SqlXml newXml = new SqlXml(nbInfo.XMLDoc.CreateReader());
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = nbInfo.ItemId;
+
+            command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = nbInfo.PortalId;
+            command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = nbInfo.ModuleId;
+            command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = nbInfo.TableCode;
+            command.Parameters.Add(new SqlParameter("@KeyData", SqlDbType.NVarChar)).Value = nbInfo.KeyData;
+            command.Parameters.Add(new SqlParameter("@ModifiedDate", SqlDbType.DateTime)).Value = nbInfo.ModifiedDate;
+            command.Parameters.Add(new SqlParameter("@TextData", SqlDbType.NVarChar)).Value = nbInfo.TextData;
+            command.Parameters.Add(new SqlParameter("@XrefItemId", SqlDbType.Int)).Value = nbInfo.XrefItemId;
+            command.Parameters.Add(new SqlParameter("@ParentItemId", SqlDbType.Int)).Value = nbInfo.ParentItemId;
+            command.Parameters.Add(new SqlParameter("@XmlString", SqlDbType.Xml)).Value = newXml;
+            command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = nbInfo.Lang;
+            command.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int)).Value = nbInfo.UserId;
+            command.Parameters.Add(new SqlParameter("@LegacyItemId", SqlDbType.Int)).Value = nbInfo.LegacyItemId;
+
+            command.ExecuteNonQuery();
+
+            //var rtnObj = BaseDA.ExecuteScalar("SELECT count(Itemid) FROM [GenXmlDB].[dbo].[XMLDATA]");
+
+
             return rtnItemId;
         }
 
@@ -54,7 +93,7 @@ namespace GenXmlSQLprovider
             try
             {
 
-                    return nbData.ItemId;
+                return nbData.ItemId;
             }
             catch (Exception ex)
             {
@@ -165,28 +204,43 @@ namespace GenXmlSQLprovider
         private void CreateTable(string tableName)
         {
             RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateDataTable.sql", tableName);
-            //RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateIdxTable.sql", tableName);
+            //RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateTableFunctions.sql", tableName);
             //RunSqlFile(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateLangTable.sql", tableName);
         }
 
 
         #endregion
 
-        private void RunSqlFile(string filepathname,string tableName,string databaseOwner = "", string objectQualifier = "")
+        private void RunSqlFile(string filepathname,string tableName)
         {
             if (System.IO.File.Exists(filepathname))
             {
-                var sqlquery = System.IO.File.ReadAllText(@"D:\Projects\GenXmlProject\GenXmlSQLprovider\sql\CreateDataTable.sql");
+                var sqlquery = System.IO.File.ReadAllText(filepathname);
                 sqlquery = sqlquery.Replace("{TableName}", tableName);
-                sqlquery = sqlquery.Replace("{databaseOwner}", "");
-                sqlquery = sqlquery.Replace("{objectQualifier}", "");
-                SqlCommand sqlQuery = new SqlCommand(sqlquery, connection);
-                sqlQuery.ExecuteNonQuery();
+                sqlquery = sqlquery.Replace("{databaseOwner}", databaseOwner + ".");  // we need this for the merge functioons to work.
+                sqlquery = sqlquery.Replace("{objectQualifier}", objectQualifier);
+
+                var cmdList = sqlquery.Split("{GO}");
+                foreach (var s in cmdList)
+                {
+                    if (s.Trim(' ') != "")
+                    {
+                        SqlCommand sqlQuery = new SqlCommand(s, BaseDA.connection);
+                        sqlQuery.ExecuteNonQuery();
+                    }
+                }
             }
 
         }
 
 
+        private string replaceSqlTokens(string sqlquery)
+        {
+            sqlquery = sqlquery.Replace("{TableName}", SqlTableName);
+            sqlquery = sqlquery.Replace("{databaseOwner}", databaseOwner + ".");  // we need this for the merge functioons to work.
+            sqlquery = sqlquery.Replace("{objectQualifier}", objectQualifier);
+            return sqlquery;
+        }
 
 
 
@@ -197,19 +251,17 @@ namespace GenXmlSQLprovider
     public class BaseDataAccess
     {
         protected string ConnectionString { get; set; }
-
-        public BaseDataAccess()
-        {
-        }
+        public SqlConnection connection = null;
 
         public BaseDataAccess(string connectionString)
         {
             this.ConnectionString = connectionString;
+            GetConnection();
         }
 
         private SqlConnection GetConnection()
         {
-            SqlConnection connection = new SqlConnection(this.ConnectionString);
+            connection = new SqlConnection(this.ConnectionString);
             if (connection.State != ConnectionState.Open)
                 connection.Open();
             return connection;
@@ -258,7 +310,7 @@ namespace GenXmlSQLprovider
 
             try
             {
-                using (SqlConnection connection = this.GetConnection())
+                using (connection)
                 {
                     DbCommand cmd = this.GetCommand(connection, procedureName, commandType);
 
@@ -280,21 +332,15 @@ namespace GenXmlSQLprovider
             return returnValue;
         }
 
-        protected object ExecuteScalar(string procedureName, List<SqlParameter> parameters)
+        public object ExecuteScalar(string commandText)
         {
             object returnValue = null;
 
             try
             {
-                using (DbConnection connection = this.GetConnection())
+                using (connection)
                 {
-                    DbCommand cmd = this.GetCommand(connection, procedureName, CommandType.StoredProcedure);
-
-                    if (parameters != null && parameters.Count > 0)
-                    {
-                        cmd.Parameters.AddRange(parameters.ToArray());
-                    }
-
+                    SqlCommand cmd = new SqlCommand(commandText, connection);
                     returnValue = cmd.ExecuteScalar();
                 }
             }
@@ -314,7 +360,7 @@ namespace GenXmlSQLprovider
 
             try
             {
-                DbConnection connection = this.GetConnection();
+                using (connection)
                 {
                     DbCommand cmd = this.GetCommand(connection, procedureName, commandType);
                     if (parameters != null && parameters.Count > 0)
@@ -333,6 +379,20 @@ namespace GenXmlSQLprovider
             }
 
             return ds;
+        }
+
+        public List<SqlParameter> AssignedSqlParams(NBrightInfo info)
+        {
+            var param = new List<SqlParameter>();
+            foreach (var prop in info.GetType().GetProperties())
+            {
+                var sqlparam = new SqlParameter();
+                sqlparam.TypeName = prop.Name;
+                sqlparam.Value = prop.GetValue(info, null);
+                param.Add(sqlparam);
+            }
+            return param;
+
         }
     }
 

@@ -250,10 +250,6 @@ namespace NBright.GenXmlDB
             {
                 xmlOut.Append("<textdata><![CDATA[" + nbrightInfo.TextData.Replace("<![CDATA[", "***CDATASTART***").Replace("]]>", "***CDATAEND***") + "]]></textdata>");
             }
-            if (withTextData && nbrightInfo.FreeTextIndexData != null)
-            {
-                xmlOut.Append("<freetextdata><![CDATA[" + nbrightInfo.FreeTextIndexData.Replace("<![CDATA[", "***CDATASTART***").Replace("]]>", "***CDATAEND***") + "]]></freetextdata>");
-            }
             xmlOut.Append("</item>");
 
             return xmlOut.ToString();
@@ -305,11 +301,6 @@ namespace NBright.GenXmlDB
                     if (selectSingleNode != null)
                         nbrightInfo.TextData = selectSingleNode.ToString().Replace("***CDATASTART***", "<![CDATA[").Replace("***CDATAEND***", "]]>");
 
-                    //FreeTextIndexData
-                    selectSingleNode = nbrightInfo.XMLDoc.XPathSelectElement("item/freetextdata");
-                    if (selectSingleNode != null)
-                        nbrightInfo.FreeTextIndexData = selectSingleNode.ToString().Replace("***CDATASTART***", "<![CDATA[").Replace("***CDATAEND***", "]]>");
-
                     //lang
                     selectSingleNode = nbrightInfo.XMLDoc.XPathSelectElement("item/lang");
                     if (selectSingleNode != null) nbrightInfo.Lang = selectSingleNode.Value;
@@ -342,7 +333,6 @@ namespace NBright.GenXmlDB
             nbd.UserId = nbrightInfo.UserId;
             nbd.XmlString = nbrightInfo.XmlString;
             nbd.XrefItemId = nbrightInfo.XrefItemId;
-            nbd.FreeTextIndexData = nbrightInfo.FreeTextIndexData;
             return nbd;
         }
 
@@ -381,7 +371,6 @@ namespace NBright.GenXmlDB
             nbrightInfo.UserId = nbrightData.UserId;
             nbrightInfo.XmlString = nbrightData.XmlString;
             nbrightInfo.XrefItemId = nbrightData.XrefItemId;
-            nbrightInfo.FreeTextIndexData = nbrightData.FreeTextIndexData;
             return nbrightInfo;
         }
 

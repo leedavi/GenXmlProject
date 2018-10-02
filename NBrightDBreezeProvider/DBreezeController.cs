@@ -165,15 +165,6 @@ namespace GenXmlDBreezeProvider
                         Indexes = indexes
                     }, false);
 
-                    //Documentation https://goo.gl/s8vtRG
-                    //Setting text search index. We will store text-search 
-                    //indexes concerning customers in table "TS_".
-                    //Second parameter is a reference to the customer ID.
-                    if (nbData?.FreeTextIndexData != "")
-                    {
-                        t.TextInsert("TS_" + nbData.TableCode, indexId.ToBytes(), nbData.FreeTextIndexData);
-                    }
-
 
                     //Committing entry
                     t.Commit();

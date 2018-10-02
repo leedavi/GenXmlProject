@@ -22,7 +22,6 @@ namespace NBright.GenXmlDB
         public string XmlString { get; set; }
         public string Lang { get; set; }
         public long UserId { get; set; }
-        public string FreeTextIndexData { get; set; }
         public long LegacyItemId { get; set; }
 
     }
@@ -50,7 +49,6 @@ namespace NBright.GenXmlDB
             UserId = nbrightData.UserId;
             XmlString = nbrightData.XmlString;
             XrefItemId = nbrightData.XrefItemId;
-            FreeTextIndexData = nbrightData.FreeTextIndexData;
             LegacyItemId = nbrightData.LegacyItemId;
         }
 

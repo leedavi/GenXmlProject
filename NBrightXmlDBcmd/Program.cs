@@ -52,6 +52,9 @@ namespace NBrightXmlDBcmd
             //nbiConfig.SetXmlProperty("genxml/provider/assembly", string.Format(@"{0}GenXmlSQLprovider\bin\Debug\netcoreapp1.1\GenXmlSQLprovider.dll", project_root));
             nbiConfig.SetXmlProperty("genxml/provider/namespaceclass", "GenXmlSQLprovider.SqlController");
             nbiConfig.SetXmlProperty("genxml/provider/connectionstring", test_sql_conn);
+            nbiConfig.SetXmlProperty("genxml/provider/sqltablename", "XMLDATA");
+            nbiConfig.SetXmlProperty("genxml/provider/objectQualifier", "");
+            nbiConfig.SetXmlProperty("genxml/provider/databaseOwner", "dbo");
 
             //nbiConfig.SetXmlProperty("genxml/dependancy/assembly1", @"System.Xml.XmlSerializer.dll");
             //nbiConfig.SetXmlProperty("genxml/dependancy/assembly2", @"System.Data.SqlClient.dll");
