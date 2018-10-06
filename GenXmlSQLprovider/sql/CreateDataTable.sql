@@ -148,11 +148,40 @@ END
 -------------------------------------------------------------------------------
 
 
-if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}{TableName}_Delete]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
-drop procedure {databaseOwner}[{objectQualifier}{TableName}_Delete]
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}{TableName}_DeleteTable]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}[{objectQualifier}{TableName}_DeleteTable]
 {GO}
 
-CREATE   PROCEDURE {databaseOwner}[{objectQualifier}{TableName}_Delete]
+CREATE   PROCEDURE {databaseOwner}[{objectQualifier}{TableName}_DeleteTable]
+@TableCode nvarchar(max)
+AS
+begin
+
+	DECLARE @ItemId as int
+
+	DECLARE inserted_cursor CURSOR LOCAL FOR
+	Select itemid from {databaseOwner}[{objectQualifier}{TableName}] where TableCode = @TableCode
+
+	OPEN inserted_cursor
+	FETCH NEXT FROM inserted_cursor INTO @ItemId
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+
+	exec {databaseOwner}[{objectQualifier}{TableName}_DeleteKey(@ItemId)]
+
+	END
+
+
+end
+
+
+{GO}
+
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}{TableName}_DeleteKey]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}[{objectQualifier}{TableName}_DeleteKey]
+{GO}
+
+CREATE   PROCEDURE {databaseOwner}[{objectQualifier}{TableName}_DeleteKey]
 @ItemID int
 AS
 begin
@@ -192,8 +221,7 @@ CREATE   PROCEDURE {databaseOwner}[{objectQualifier}{TableName}_Update]
 @ParentItemId int,
 @XmlString xml,
 @Lang nvarchar(10),
-@UserId int,
-@LegacyItemId int
+@UserId int
 )
 AS
 BEGIN
@@ -213,8 +241,7 @@ XrefItemId,
 ParentItemId,
 XmlString,
 Lang,
-UserId,
-LegacyItemId
+UserId
 		)
 		values
 		(
@@ -228,8 +255,7 @@ LegacyItemId
 @ParentItemId,
 @XmlString,
 @Lang,
-@UserId,
-@LegacyItemId
+@UserId
 		)
 		
 		set @ItemID = @@IDENTITY
@@ -249,8 +275,7 @@ XrefItemId = @XrefItemId,
 ParentItemId = @ParentItemId,
 XmlString = @XmlString,
 Lang = @Lang,
-UserId = @UserId,
-LegacyItemId = @LegacyItemId
+UserId = @UserId
 		where ItemId = @ItemId
  
 	end
@@ -285,8 +310,7 @@ begin
 	NB1.[ParentItemId],
 	ISNULL(NB2.[XmlString],NB1.[XmlString]) as [XmlString],
 	ISNULL(NB2.[Lang],ISNULL(NB1.[Lang],'')) as [Lang],
-	NB1.[UserId],
-	NB1.[LegacyItemId]
+	NB1.[UserId]
 	from {databaseOwner}[{objectQualifier}{TableName}] as NB1
 	left join {databaseOwner}[{objectQualifier}{TableName}Lang] as NB2 on NB2.ParentItemId = NB1.ItemId and NB2.lang = @Lang 
 	where NB1.ItemId = @ItemId
@@ -348,7 +372,6 @@ begin
 	set @rtnFields = @rtnFields + ',NB1.[XrefItemId] '
 	set @rtnFields = @rtnFields + ',NB1.[ParentItemId] '
 	set @rtnFields = @rtnFields + ',NB1.[UserId] '
-	set @rtnFields = @rtnFields + ',NB1.[LegacyItemId] '
 
 
 	-- Return records without paging.
@@ -452,7 +475,6 @@ begin
 	set @rtnFields = @rtnFields + ',NB1.[XrefItemId] '
 	set @rtnFields = @rtnFields + ',NB1.[ParentItemId] '
 	set @rtnFields = @rtnFields + ',NB1.[UserId] '
-	set @rtnFields = @rtnFields + ',NB1.[LegacyItemId] '
 
 
 
@@ -596,8 +618,7 @@ XrefItemId,
 ParentItemId,
 XmlString,
 Lang,
-UserId,
-LegacyItemId
+UserId
 	from {databaseOwner}[{objectQualifier}{TableName}] as NB1
 	where NB1.ItemId = @ItemId
 end
@@ -628,14 +649,40 @@ XrefItemId,
 ParentItemId,
 XmlString,
 Lang,
-UserId,
-LegacyItemId
+UserId
 	from {databaseOwner}[{objectQualifier}{TableName}] as NB1
 	where NB1.ParentItemId = @ParentItemId and NB1.Lang = @Lang and TableCode = @TableCodelang
 end
 {GO}
 
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}{TableName}_GetDataByKey]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}[{objectQualifier}{TableName}_GetDataByKey]
+{GO}
 
+CREATE     PROCEDURE {databaseOwner}[{objectQualifier}{TableName}_GetDataByKey]
+@TableCode nvarchar(50),
+@KeyData int,
+@Lang nvarchar(10)
+AS
+begin
+
+	select top 1
+ItemId,
+PortalId, 
+ModuleId,
+TableCode,
+KeyData,
+ModifiedDate,
+TextData,
+XrefItemId,
+ParentItemId,
+XmlString,
+Lang,
+UserId
+	from {databaseOwner}[{objectQualifier}{TableName}] as NB1
+	where NB1.KeyData = @KeyData and NB1.Lang = @Lang and TableCode = @TableCode
+end
+{GO}
 
 -------------------------------------------------------------------------------
 ----------         Triggers for the index table                    ------------

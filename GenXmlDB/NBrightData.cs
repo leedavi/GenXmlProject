@@ -8,7 +8,55 @@ using System.Globalization;
 
 namespace NBright.GenXmlDB
 {
-    public class NBrightData 
+
+    public class NBrightSearchParams
+    {
+        public NBrightSearchParams()
+        {
+            ItemId = 0;
+            PortalId = 0;
+            ModuleId = 0;
+            TableCode = "";
+            KeyData = "";
+            StartDate = DateTime.Now;
+            EndDate = DateTime.Now;
+            XrefItemId = 0;
+            ParentItemId = 0;
+            Lang = "";
+            UserId = 0;
+            SqlFilter = "";
+            SqlOrderBy = "";
+            SearchType = "";
+            ReturnLimit = 0;
+            pageNum = 0;
+            pageSize = 0;
+            RecordCount = 0;
+            ExtraData = new List<string>();
+        }
+
+        public long ItemId { get; set; }
+        public long PortalId { get; set; }
+        public long ModuleId { get; set; }
+        public string TableCode { get; set; }
+        public string KeyData { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public long XrefItemId { get; set; }
+        public long ParentItemId { get; set; }
+        public string Lang { get; set; }
+        public long UserId { get; set; }
+        public string SqlFilter { get; set; }
+        public string SqlOrderBy { get; set; }
+        public string SearchType { get; set; }
+        public long ReturnLimit { get; set; }
+        public long pageNum { get; set; }
+        public long pageSize { get; set; }
+        public long RecordCount { get; set; }
+        public List<string> ExtraData { get; set; }
+    }
+
+
+    public class NBrightRecord
     {
         public long ItemId { get; set; }
         public long PortalId { get; set; }
@@ -22,11 +70,10 @@ namespace NBright.GenXmlDB
         public string XmlString { get; set; }
         public string Lang { get; set; }
         public long UserId { get; set; }
-        public long LegacyItemId { get; set; }
 
     }
 
-    public class NBrightInfo : NBrightData
+    public class NBrightInfo : NBrightRecord
     {
 
         public NBrightInfo()
@@ -35,21 +82,20 @@ namespace NBright.GenXmlDB
             XmlString = "<genxml></genxml>";
         }
 
-        public NBrightInfo(NBrightData nbrightData)
+        public NBrightInfo(NBrightRecord NBrightRecord)
         {
-            ItemId = nbrightData.ItemId;
-            Lang = nbrightData.Lang;
-            ModifiedDate = nbrightData.ModifiedDate;
-            ModuleId = nbrightData.ModuleId;
-            ParentItemId = nbrightData.ParentItemId;
-            PortalId = nbrightData.PortalId;
-            KeyData = nbrightData.KeyData;
-            TableCode = nbrightData.TableCode;
-            TextData = nbrightData.TextData;
-            UserId = nbrightData.UserId;
-            XmlString = nbrightData.XmlString;
-            XrefItemId = nbrightData.XrefItemId;
-            LegacyItemId = nbrightData.LegacyItemId;
+            ItemId = NBrightRecord.ItemId;
+            Lang = NBrightRecord.Lang;
+            ModifiedDate = NBrightRecord.ModifiedDate;
+            ModuleId = NBrightRecord.ModuleId;
+            ParentItemId = NBrightRecord.ParentItemId;
+            PortalId = NBrightRecord.PortalId;
+            KeyData = NBrightRecord.KeyData;
+            TableCode = NBrightRecord.TableCode;
+            TextData = NBrightRecord.TextData;
+            UserId = NBrightRecord.UserId;
+            XmlString = NBrightRecord.XmlString;
+            XrefItemId = NBrightRecord.XrefItemId;
         }
 
         public XDocument XMLDoc = null;

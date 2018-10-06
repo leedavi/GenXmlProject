@@ -54,7 +54,7 @@ namespace GenXmlDBreezeProvider
             if (lang == "")
             {
                 // no lang record required
-                var nbd = Utils.ConvertToNBrightData(nbInfo);
+                var nbd = Utils.ConvertToNBrightRecord(nbInfo);
                 rtnItemId = Update(nbd);
             }
             else
@@ -63,7 +63,7 @@ namespace GenXmlDBreezeProvider
                 var baseXml = nbInfo.XmlString; // make sure we have the orginal XML before changing anything.
 
                 nbInfo.XMLDoc.XPathSelectElement("genxml/lang").Remove();
-                var nbd = Utils.ConvertToNBrightData(nbInfo);
+                var nbd = Utils.ConvertToNBrightRecord(nbInfo);
                 nbd.Lang = "";
                 nbd.ParentItemId = 0;
                 var parentItemId = Update(nbd);
@@ -71,7 +71,7 @@ namespace GenXmlDBreezeProvider
                 nbInfo.XmlString = baseXml;
                 var nodLang = nbInfo.XMLDoc.XPathSelectElement("genxml/lang/genxml");
                 nbInfo.XmlString = nodLang.ToString();
-                var nbdl = Utils.ConvertToNBrightData(nbInfo);
+                var nbdl = Utils.ConvertToNBrightRecord(nbInfo);
                 nbdl.ParentItemId = parentItemId;
                 var recordexists = GetDataByParentIdLang(nbInfo.TableCode + "LANG", nbInfo.ItemId, lang);
                 nbdl.ItemId = 0;
@@ -86,7 +86,7 @@ namespace GenXmlDBreezeProvider
             return rtnItemId;
         }
 
-        public override long Update(NBrightData nbData)
+        public override long Update(NBrightRecord nbData)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace GenXmlDBreezeProvider
                     }
 
                     //Documentation https://goo.gl/YtWnAJ
-                    t.ObjectInsert(tableCode, new DBreeze.Objects.DBreezeObject <NBrightData>
+                    t.ObjectInsert(tableCode, new DBreeze.Objects.DBreezeObject <NBrightRecord>
                     {
                         NewEntity = newEntity,
                         Entity = nbData,
@@ -185,7 +185,7 @@ namespace GenXmlDBreezeProvider
                 {
                     foreach (var el in t.SelectForwardFromTo<byte[], byte[]>(tableCode, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(parentItemId,lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(parentItemId,lang, long.MaxValue), true))
                     {
-                        return new NBrightInfo(el.ObjectGet<NBrightData>().Entity);
+                        return new NBrightInfo(el.ObjectGet<NBrightRecord>().Entity);
                     }
                 }
             }
@@ -196,111 +196,111 @@ namespace GenXmlDBreezeProvider
             return null;
         }
 
-        public override NBrightInfo GetDataById(string tableCode, long itemId, string lang = "")
-        {
-            try
-            {
-                using (var t = engine.GetTransaction())
-                {
-                    var obj = t.Select<byte[], byte[]>(tableCode, DBreezeIdx.idx_ItemId.ToIndex(itemId)).ObjectGet<NBrightData>();
-                    if (obj != null)
-                    {
-                        if (lang == "")
-                        {
-                            return new NBrightInfo(obj.Entity);
-                        }
-                        else
-                        {
-                            var nbi1 = new NBrightInfo(obj.Entity);
-                            foreach (var el2 in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MaxValue), true))
-                            {
-                                var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightData>().Entity);
-                                nbi1.AddXmlLang(nbi2.XmlString);
-                                nbi1.Lang = nbi2.Lang;
-                            }
-                            return nbi1;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return null;
-        }
+        //public override NBrightInfo GetDataById(string tableCode, long itemId, string lang = "")
+        //{
+        //    try
+        //    {
+        //        using (var t = engine.GetTransaction())
+        //        {
+        //            var obj = t.Select<byte[], byte[]>(tableCode, DBreezeIdx.idx_ItemId.ToIndex(itemId)).ObjectGet<NBrightRecord>();
+        //            if (obj != null)
+        //            {
+        //                if (lang == "")
+        //                {
+        //                    return new NBrightInfo(obj.Entity);
+        //                }
+        //                else
+        //                {
+        //                    var nbi1 = new NBrightInfo(obj.Entity);
+        //                    foreach (var el2 in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MaxValue), true))
+        //                    {
+        //                        var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightRecord>().Entity);
+        //                        nbi1.AddXmlLang(nbi2.XmlString);
+        //                        nbi1.Lang = nbi2.Lang;
+        //                    }
+        //                    return nbi1;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    return null;
+        //}
 
-        public override List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang = "")
-        {
-            var rtnList = new List<NBrightInfo>();
-            try
-            {                
-                using (var t = engine.GetTransaction())
-                {
-                    foreach (var doc in t.TextSearch("TS_" + tableCode).BlockAnd(text).GetDocumentIDs())
-                    {
-                        var obj = t.Select<byte[], byte[]>(tableCode, DBreezeIdx.idx_ItemId.ToIndex(doc)).ObjectGet<NBrightData>();
-                        if (lang == "")
-                        {
-                            if (obj != null) rtnList.Add(new NBrightInfo(obj.Entity));
-                        }
-                        else
-                        {
-                            var nbi1 = new NBrightInfo(obj.Entity);
-                            foreach (var el2 in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MaxValue), true))
-                            {
-                                var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightData>().Entity);
-                                nbi1.AddXmlLang(nbi2.XmlString);
-                                nbi1.Lang = nbi2.Lang;
-                            }
-                            rtnList.Add(nbi1);
-                        }
-                    }
+        //public override List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang = "")
+        //{
+        //    var rtnList = new List<NBrightInfo>();
+        //    try
+        //    {                
+        //        using (var t = engine.GetTransaction())
+        //        {
+        //            foreach (var doc in t.TextSearch("TS_" + tableCode).BlockAnd(text).GetDocumentIDs())
+        //            {
+        //                var obj = t.Select<byte[], byte[]>(tableCode, DBreezeIdx.idx_ItemId.ToIndex(doc)).ObjectGet<NBrightRecord>();
+        //                if (lang == "")
+        //                {
+        //                    if (obj != null) rtnList.Add(new NBrightInfo(obj.Entity));
+        //                }
+        //                else
+        //                {
+        //                    var nbi1 = new NBrightInfo(obj.Entity);
+        //                    foreach (var el2 in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MaxValue), true))
+        //                    {
+        //                        var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightRecord>().Entity);
+        //                        nbi1.AddXmlLang(nbi2.XmlString);
+        //                        nbi1.Lang = nbi2.Lang;
+        //                    }
+        //                    rtnList.Add(nbi1);
+        //                }
+        //            }
 
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
 
-            return rtnList;
-        }
+        //    return rtnList;
+        //}
 
-        public override List<NBrightInfo> GetListByUserId(string tableCode, long userId, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_UserId, userId, lang);
-        }
+        //public override List<NBrightInfo> GetListByUserId(string tableCode, long userId, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_UserId, userId, lang);
+        //}
 
-        public override List<NBrightInfo> GetListByKey(string tableCode, long key, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_Key, key, lang);
-        }
+        //public override List<NBrightInfo> GetListByKey(string tableCode, long key, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_Key, key, lang);
+        //}
 
-        public override List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_ParentItemId, parentItemId, lang);
-        }
+        //public override List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_ParentItemId, parentItemId, lang);
+        //}
 
-        public override List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_XrefItemId, xrefItemId, lang);
-        }
+        //public override List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_XrefItemId, xrefItemId, lang);
+        //}
 
-        public override List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_ModuleId, moduleId, lang);
-        }
+        //public override List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_ModuleId, moduleId, lang);
+        //}
 
-        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
-        {
-            return GetListByPortalId(tableCode, portalId);
-        }
+        //public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
+        //{
+        //    return GetListByPortalId(tableCode, portalId);
+        //}
 
-        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
-        {
-            return GetDataList(tableCode, DBreezeIdx.idx_PortalId, portalId, lang);
-        }
+        //public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
+        //{
+        //    return GetDataList(tableCode, DBreezeIdx.idx_PortalId, portalId, lang);
+        //}
 
         private List<NBrightInfo> GetDataList(string tableCode,byte idxType, long keyValue, string lang = "")
         {
@@ -314,7 +314,7 @@ namespace GenXmlDBreezeProvider
                     {
                         foreach (var el in t.SelectForwardFromTo<byte[], byte[]>(tableCode, idxType.ToIndex(keyValue, long.MinValue), true, idxType.ToIndex(keyValue, long.MaxValue), true))
                         {
-                            var nbd = el.ObjectGet<NBrightData>().Entity;
+                            var nbd = el.ObjectGet<NBrightRecord>().Entity;
                             if (nbd != null) rtnList.Add(new NBrightInfo(nbd));
                         }
                     }
@@ -323,10 +323,10 @@ namespace GenXmlDBreezeProvider
 
                         foreach (var el in t.SelectForwardFromTo<byte[], byte[]>(tableCode, idxType.ToIndex(keyValue, long.MinValue), true, idxType.ToIndex(keyValue, long.MaxValue), true))
                         {
-                            var nbi1 = new NBrightInfo(el.ObjectGet<NBrightData>().Entity);
+                            var nbi1 = new NBrightInfo(el.ObjectGet<NBrightRecord>().Entity);
                             foreach (var el2 in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MinValue), true, DBreezeIdx.idx_ParentItemId_Lang.ToIndex(nbi1.ItemId, lang, long.MaxValue), true))
                             {
-                                var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightData>().Entity);
+                                var nbi2 = new NBrightInfo(el2.ObjectGet<NBrightRecord>().Entity);
                                 nbi1.AddXmlLang(nbi2.XmlString);
                                 nbi1.Lang = nbi2.Lang;
                             }
@@ -345,7 +345,7 @@ namespace GenXmlDBreezeProvider
         }
 
 
-        public override void DeleteKey(string tableCode, long itemId)
+        public override void DeleteKey(long itemId, string tableCode)
         {
             using (var t = engine.GetTransaction())
             {
@@ -355,14 +355,14 @@ namespace GenXmlDBreezeProvider
 
                 foreach (var el in t.SelectForwardFromTo<byte[], byte[]>(tableCode + "LANG", DBreezeIdx.idx_ParentItemId.ToIndex(itemId, long.MinValue), true, DBreezeIdx.idx_ParentItemId.ToIndex(itemId, long.MaxValue), true))
                 {
-                    t.ObjectRemove(tableCode + "LANG", DBreezeIdx.idx_ItemId.ToIndex((long)el.ObjectGet<NBrightData>().Entity.ItemId));
+                    t.ObjectRemove(tableCode + "LANG", DBreezeIdx.idx_ItemId.ToIndex((long)el.ObjectGet<NBrightRecord>().Entity.ItemId));
                 }
 
                 t.Commit();
             }
         }
 
-        public override void DeleteTable(string tableCode)
+        public override void DeleteTableCode(string tableCode)
         {
             using (var t = engine.GetTransaction())
             {

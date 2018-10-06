@@ -318,9 +318,9 @@ namespace NBright.GenXmlDB
             return nbrightInfo;
         }
 
-        public static NBrightData ConvertToNBrightData(NBrightInfo nbrightInfo)
+        public static NBrightRecord ConvertToNBrightRecord(NBrightInfo nbrightInfo)
         {
-            var nbd = new NBrightData();
+            var nbd = new NBrightRecord();
             nbd.ItemId = nbrightInfo.ItemId;
             nbd.Lang = nbrightInfo.Lang;
             nbd.ModifiedDate = nbrightInfo.ModifiedDate;
@@ -336,41 +336,41 @@ namespace NBright.GenXmlDB
             return nbd;
         }
 
-        public static NBrightData ConvertToNBrightDataBase(NBrightInfo nbrightInfo)
+        public static NBrightRecord ConvertToNBrightRecordBase(NBrightInfo nbrightInfo)
         {
             // remove and language dependant data
             nbrightInfo.XMLDoc.XPathSelectElement("genxml/lang").Remove();
-            var nbd = ConvertToNBrightData(nbrightInfo);
+            var nbd = ConvertToNBrightRecord(nbrightInfo);
             nbd.Lang = "";
             nbd.ParentItemId = 0;
             return nbd;
         }
 
-        public static NBrightData ConvertToNBrightDataLang(NBrightInfo nbrightInfo)
+        public static NBrightRecord ConvertToNBrightRecordLang(NBrightInfo nbrightInfo)
         {
             // keep only language dependant data
             var nodLang = nbrightInfo.XMLDoc.XPathSelectElement("genxml/lang/genxml");
             nbrightInfo.XmlString = nodLang.ToString();
-            var nbd = ConvertToNBrightData(nbrightInfo);
+            var nbd = ConvertToNBrightRecord(nbrightInfo);
             nbd.ParentItemId = 0; // this should be set by the update function.
             return nbd;
         }
 
-        public static NBrightInfo ConvertToNBrightInfo(NBrightData nbrightData)
+        public static NBrightInfo ConvertToNBrightInfo(NBrightRecord NBrightRecord)
         {
             var nbrightInfo = new NBrightInfo();
-            nbrightInfo.ItemId = nbrightData.ItemId;
-            nbrightInfo.Lang = nbrightData.Lang;
-            nbrightInfo.ModifiedDate = nbrightData.ModifiedDate;
-            nbrightInfo.ModuleId = nbrightData.ModuleId;
-            nbrightInfo.ParentItemId = nbrightData.ParentItemId;
-            nbrightInfo.PortalId = nbrightData.PortalId;
-            nbrightInfo.KeyData = nbrightData.KeyData;
-            nbrightInfo.TableCode = nbrightData.TableCode;
-            nbrightInfo.TextData = nbrightData.TextData;
-            nbrightInfo.UserId = nbrightData.UserId;
-            nbrightInfo.XmlString = nbrightData.XmlString;
-            nbrightInfo.XrefItemId = nbrightData.XrefItemId;
+            nbrightInfo.ItemId = NBrightRecord.ItemId;
+            nbrightInfo.Lang = NBrightRecord.Lang;
+            nbrightInfo.ModifiedDate = NBrightRecord.ModifiedDate;
+            nbrightInfo.ModuleId = NBrightRecord.ModuleId;
+            nbrightInfo.ParentItemId = NBrightRecord.ParentItemId;
+            nbrightInfo.PortalId = NBrightRecord.PortalId;
+            nbrightInfo.KeyData = NBrightRecord.KeyData;
+            nbrightInfo.TableCode = NBrightRecord.TableCode;
+            nbrightInfo.TextData = NBrightRecord.TextData;
+            nbrightInfo.UserId = NBrightRecord.UserId;
+            nbrightInfo.XmlString = NBrightRecord.XmlString;
+            nbrightInfo.XrefItemId = NBrightRecord.XrefItemId;
             return nbrightInfo;
         }
 

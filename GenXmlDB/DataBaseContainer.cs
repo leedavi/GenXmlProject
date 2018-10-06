@@ -29,7 +29,6 @@ namespace NBright.GenXmlDB
 
         }
 
-
         public virtual void Disconnect()
         {
             if(_objProvider != null)
@@ -40,94 +39,25 @@ namespace NBright.GenXmlDB
 
         #region "DB Interface Methods"
 
-        public virtual void DeleteKey(string tableCode, long itemId)
+
+        public virtual NBrightInfo GetDataById(long itemId, string lang = "", string tableCode = "")
         {
-            _objProvider.DeleteKey(tableCode, itemId);
+            return _objProvider.GetDataById(itemId, lang,  tableCode);
         }
 
-        public virtual void DeleteTable(string tableCode)
+        public virtual List<NBrightInfo> GetList(NBrightSearchParams searchParams)
         {
-            _objProvider.DeleteTable(tableCode);
+            return _objProvider.GetList(searchParams);
         }
 
-        public List<NBrightInfo> GetDataByFreeText(string tableCode, string text)
+        public virtual void DeleteKey(long itemId, string tableCode = "")
         {
-            return GetDataByFreeText(tableCode, text, string.Empty);
+            _objProvider.DeleteKey(itemId, tableCode);
         }
 
-        public virtual List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang = "")
+        public virtual void DeleteTableCode(string tableCode = "")
         {
-            return _objProvider.GetDataByFreeText(tableCode, text, lang);
-        }
-
-        public virtual NBrightInfo GetDataById(string tableCode, long itemId)
-        {
-            return GetDataById(tableCode, itemId, string.Empty);
-        }
-
-        public virtual NBrightInfo GetDataById(string tableCode, long itemId, string lang = "")
-        {
-            return _objProvider.GetDataById(tableCode, itemId, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByKey(string tableCode, long key)
-        {
-            return GetListByKey(tableCode, key, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByKey(string tableCode, long key, string lang = "")
-        {
-            return _objProvider.GetListByKey(tableCode, key, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId)
-        {
-            return GetListByModuleId(tableCode, moduleId, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId, string lang = "")
-        {
-            return _objProvider.GetListByModuleId(tableCode, moduleId, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId)
-        {
-            return GetListByParentItemId(tableCode, parentItemId, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId, string lang = "")
-        {
-            return _objProvider.GetListByParentItemId(tableCode, parentItemId, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
-        {
-            return GetListByPortalId(tableCode, portalId, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
-        {
-            return _objProvider.GetListByPortalId(tableCode, portalId, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByUserId(string tableCode, long userId)
-        {
-            return GetListByUserId(tableCode, userId, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByUserId(string tableCode, long userId, string lang = "")
-        {
-            return _objProvider.GetListByUserId(tableCode, userId, lang);
-        }
-
-        public virtual List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId)
-        {
-            return GetListByXrefItemId(tableCode, xrefItemId, string.Empty);
-        }
-
-        public virtual List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId, string lang = "")
-        {
-            return _objProvider.GetListByXrefItemId(tableCode, xrefItemId, lang);
+            _objProvider.DeleteTableCode(tableCode);
         }
 
         public virtual long Update(NBrightInfo nbInfo)
@@ -135,7 +65,7 @@ namespace NBright.GenXmlDB
             return _objProvider.Update(nbInfo);
         }
 
-        public virtual long Update(NBrightData nbData)
+        public virtual long Update(NBrightRecord nbData)
         {
             return _objProvider.Update(nbData);
         }

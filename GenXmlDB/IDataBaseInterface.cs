@@ -11,29 +11,15 @@ namespace NBright.GenXmlDB
 
         long Update(NBrightInfo nbInfo);
 
-        long Update(NBrightData nbData);
+        long Update(NBrightRecord nbData);
 
-        NBrightInfo GetDataById(string tableCode, long itemId, string lang);
+        NBrightInfo GetDataById(long itemId, string lang = "", string tableCode = "");
 
-        List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang);
+        List<NBrightInfo> GetList(NBrightSearchParams searchParams);
 
-        List<NBrightInfo> GetListByUserId(string tableCode, long userId, string lang);
+        void DeleteKey(long itemId, string tableCode = "");
 
-        List<NBrightInfo> GetListByKey(string tableCode, long key, string lang);
-
-        List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId, string lang);
-
-        List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId, string lang);
-
-        List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId, string lang);
-
-        List<NBrightInfo> GetListByPortalId(string tableCode, long portalId);
-        List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang);
-
-        void DeleteKey(string tableCode, long itemId);
-
-        void DeleteTable(string tableCode);
-
+        void DeleteTableCode(string tableCode = "");
 
     }
 }

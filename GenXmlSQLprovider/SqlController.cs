@@ -53,47 +53,88 @@ namespace GenXmlSQLprovider
 
         public override long Update(NBrightInfo nbInfo)
         {
-            var lang = nbInfo.Lang;
-            long rtnItemId = 0;
-
-            var cmdText = "{databaseOwner}{objectQualifier}{TableName}_Update ";
-            cmdText = replaceSqlTokens(cmdText);
-
-            SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
-
-            SqlXml newXml = new SqlXml(nbInfo.XMLDoc.CreateReader());
-
-            command.CommandType = CommandType.StoredProcedure;
-
-            command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = nbInfo.ItemId;
-
-            command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = nbInfo.PortalId;
-            command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = nbInfo.ModuleId;
-            command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = nbInfo.TableCode;
-            command.Parameters.Add(new SqlParameter("@KeyData", SqlDbType.NVarChar)).Value = nbInfo.KeyData;
-            command.Parameters.Add(new SqlParameter("@ModifiedDate", SqlDbType.DateTime)).Value = nbInfo.ModifiedDate;
-            command.Parameters.Add(new SqlParameter("@TextData", SqlDbType.NVarChar)).Value = nbInfo.TextData;
-            command.Parameters.Add(new SqlParameter("@XrefItemId", SqlDbType.Int)).Value = nbInfo.XrefItemId;
-            command.Parameters.Add(new SqlParameter("@ParentItemId", SqlDbType.Int)).Value = nbInfo.ParentItemId;
-            command.Parameters.Add(new SqlParameter("@XmlString", SqlDbType.Xml)).Value = newXml;
-            command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = nbInfo.Lang;
-            command.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int)).Value = nbInfo.UserId;
-            command.Parameters.Add(new SqlParameter("@LegacyItemId", SqlDbType.Int)).Value = nbInfo.LegacyItemId;
-
-            command.ExecuteNonQuery();
-
-            //var rtnObj = BaseDA.ExecuteScalar("SELECT count(Itemid) FROM [GenXmlDB].[dbo].[XMLDATA]");
-
-
-            return rtnItemId;
-        }
-
-        public override long Update(NBrightData nbData)
-        {
             try
             {
 
-                return nbData.ItemId;
+
+                var lang = nbInfo.Lang;
+                long rtnItemId = 0;
+                if (lang == "")
+                {
+                    // no lang record required
+                    var nbd = Utils.ConvertToNBrightRecord(nbInfo);
+                    rtnItemId = Update(nbd);
+                }
+                else
+                {
+                    // create base and lang records
+                    var baseXml = nbInfo.XmlString; // make sure we have the orginal XML before changing anything.
+
+                    nbInfo.XMLDoc.XPathSelectElement("genxml/lang").Remove();
+                    var nbd = Utils.ConvertToNBrightRecord(nbInfo);
+                    nbd.Lang = "";
+                    nbd.ParentItemId = 0;
+                    var parentItemId = Update(nbd);
+
+                    nbInfo.XmlString = baseXml;
+                    var nodLang = nbInfo.XMLDoc.XPathSelectElement("genxml/lang/genxml");
+                    nbInfo.XmlString = nodLang.ToString();
+                    var nbdl = Utils.ConvertToNBrightRecord(nbInfo);
+                    nbdl.ParentItemId = parentItemId;
+                    var recordexists = GetDataByParentIdLang(nbInfo.TableCode + "LANG", nbInfo.ItemId, lang);
+                    nbdl.ItemId = 0;
+                    if (recordexists != null)
+                    {
+                        nbdl.ItemId = recordexists.ItemId;
+                    }
+                    Update(nbdl);
+                    rtnItemId = parentItemId;
+                }
+
+                return rtnItemId;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public override long Update(NBrightRecord nbData)
+        {
+            try
+            {
+                var nbInfo = new NBrightInfo(nbData);
+
+                int rtnItemId = 0;
+
+                var cmdText = "{databaseOwner}{objectQualifier}{TableName}_Update ";
+                cmdText = replaceSqlTokens(cmdText);
+
+                SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+                SqlXml newXml = new SqlXml(nbInfo.XMLDoc.CreateReader());
+
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = nbInfo.ItemId;
+
+                command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = nbInfo.PortalId;
+                command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = nbInfo.ModuleId;
+                command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = nbInfo.TableCode;
+                command.Parameters.Add(new SqlParameter("@KeyData", SqlDbType.NVarChar)).Value = nbInfo.KeyData;
+                command.Parameters.Add(new SqlParameter("@ModifiedDate", SqlDbType.DateTime)).Value = nbInfo.ModifiedDate;
+                command.Parameters.Add(new SqlParameter("@TextData", SqlDbType.NVarChar)).Value = nbInfo.TextData;
+                command.Parameters.Add(new SqlParameter("@XrefItemId", SqlDbType.Int)).Value = nbInfo.XrefItemId;
+                command.Parameters.Add(new SqlParameter("@ParentItemId", SqlDbType.Int)).Value = nbInfo.ParentItemId;
+                command.Parameters.Add(new SqlParameter("@XmlString", SqlDbType.Xml)).Value = newXml;
+                command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = nbInfo.Lang;
+                command.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int)).Value = nbInfo.UserId;
+
+                var rtbObj = command.ExecuteScalar();
+
+                rtnItemId = (int)rtbObj;
+
+                return rtnItemId;
             }
             catch (Exception ex)
             {
@@ -105,101 +146,109 @@ namespace GenXmlSQLprovider
         {
             try
             {
-                return new NBrightInfo();
+                var cmdText = "{databaseOwner}{objectQualifier}{TableName}_GetDataLang ";
+                cmdText = replaceSqlTokens(cmdText);
+
+                SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@ParentItemId", SqlDbType.Int)).Value = parentItemId;
+                command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = lang;
+
+                return ReadSqlCommand(command);               
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            //return null;
         }
 
-        public override NBrightInfo GetDataById(string tableCode, long itemId, string lang = "")
+        public override NBrightInfo GetDataById(long itemId, string lang = "", string tableCode = "")
         {
             try
             {
-                return new NBrightInfo();
+                var cmdText = "{databaseOwner}{objectQualifier}{TableName}_Get ";
+                cmdText = replaceSqlTokens(cmdText);
+
+                SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = itemId;
+                command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = lang;
+
+                return ReadSqlCommand(command);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            //return null;
         }
 
-        public override List<NBrightInfo> GetDataByFreeText(string tableCode, string text, string lang = "")
+        public override List<NBrightInfo> GetList(NBrightSearchParams searchParams)
         {
-            var rtnList = new List<NBrightInfo>();
-            try
-            {                
 
-            }
-            catch (Exception ex)
+            var cmdText = "{databaseOwner}{objectQualifier}{TableName}_GetList ";
+            
+            switch (searchParams.SearchType)
             {
-                throw ex;
+                case "":
+                    Console.WriteLine("Case 1");
+                    break;
             }
 
-            return rtnList;
+            cmdText = replaceSqlTokens(cmdText);
+
+            SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = searchParams.PortalId;
+            command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = searchParams.ModuleId;
+            command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = searchParams.TableCode;
+            command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = searchParams.SqlFilter;
+            command.Parameters.Add(new SqlParameter("@OrderBy", SqlDbType.NVarChar)).Value = searchParams.SqlOrderBy;
+            command.Parameters.Add(new SqlParameter("@ReturnLimit", SqlDbType.Int)).Value = searchParams.ReturnLimit;
+            command.Parameters.Add(new SqlParameter("@pageNum", SqlDbType.Int)).Value = searchParams.pageNum;
+            command.Parameters.Add(new SqlParameter("@PageSize", SqlDbType.Int)).Value = searchParams.pageSize;
+            command.Parameters.Add(new SqlParameter("@RecordCount", SqlDbType.Int)).Value = searchParams.RecordCount;
+            command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = searchParams.Lang;
+
+            return ReadSqlListCommand(command);
         }
 
-        public override List<NBrightInfo> GetListByUserId(string tableCode, long userId, string lang = "")
+
+        public override void DeleteKey(long itemId, string tableCode = "")
         {
-            return new List<NBrightInfo>();
+            var cmdText = "{databaseOwner}{objectQualifier}{TableName}_DeleteKey ";
+            cmdText = replaceSqlTokens(cmdText);
+
+            SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
+
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = itemId;
+
+            command.ExecuteNonQuery();
+
         }
 
-        public override List<NBrightInfo> GetListByKey(string tableCode, long key, string lang = "")
+        public override void DeleteTableCode(string tableCode)
         {
-            return new List<NBrightInfo>();
-        }
+            var cmdText = "{databaseOwner}{objectQualifier}{TableName}_DeleteTableCode ";
+            cmdText = replaceSqlTokens(cmdText);
 
-        public override List<NBrightInfo> GetListByParentItemId(string tableCode, long parentItemId, string lang = "")
-        {
-            return new List<NBrightInfo>();
-        }
+            SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
 
-        public override List<NBrightInfo> GetListByXrefItemId(string tableCode, long xrefItemId, string lang = "")
-        {
-            return new List<NBrightInfo>();
-        }
+            command.CommandType = CommandType.StoredProcedure;
 
-        public override List<NBrightInfo> GetListByModuleId(string tableCode, long moduleId, string lang = "")
-        {
-            return new List<NBrightInfo>();
-        }
+            command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = tableCode;
 
-        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId)
-        {
-            return GetListByPortalId(tableCode, portalId);
-        }
-        public override List<NBrightInfo> GetListByPortalId(string tableCode, long portalId, string lang = "")
-        {
-            return new List<NBrightInfo>();
-        }
-
-        private List<NBrightInfo> GetDataList(string tableCode,byte idxType, long keyValue, string lang = "")
-        {
-            var rtnList = new List<NBrightInfo>();
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return rtnList;
+            command.ExecuteNonQuery();
         }
 
 
-        public override void DeleteKey(string tableCode, long itemId)
-        {
-        }
-
-        public override void DeleteTable(string tableCode)
-        {
-
-        }
 
         private void CreateTable(string tableName)
         {
@@ -242,6 +291,61 @@ namespace GenXmlSQLprovider
             return sqlquery;
         }
 
+        private NBrightInfo ReadSqlCommand(SqlCommand command)
+        {
+            var nbi = new NBrightInfo();
+
+            using (var reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    nbi.ItemId = (int)reader[0];
+                    nbi.PortalId = (int)reader[1];
+                    nbi.ModuleId = (int)reader[2];
+                    nbi.TableCode = (string)reader[3];
+                    nbi.KeyData = (string)reader[4];
+                    nbi.ModifiedDate = (DateTime)reader[5];
+                    nbi.TextData = (string)reader[6];
+                    nbi.XrefItemId = (int)reader[7];
+                    nbi.ParentItemId = (int)reader[8];
+                    nbi.XmlString = (string)reader[9];
+                    nbi.Lang = (string)reader[10];
+                    nbi.UserId = (int)reader[11];
+                }
+            }
+
+            return nbi;
+        }
+
+
+        private List<NBrightInfo> ReadSqlListCommand(SqlCommand command)
+        {
+            var nbiList = new List<NBrightInfo>();
+
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var nbi = new NBrightInfo();
+                    nbi.ItemId = (int)reader[0];
+                    nbi.PortalId = (int)reader[3];
+                    nbi.ModuleId = (int)reader[4];
+                    nbi.TableCode = (string)reader[5];
+                    nbi.KeyData = (string)reader[6];
+                    nbi.ModifiedDate = (DateTime)reader[7];
+                    nbi.TextData = (string)reader[8];
+                    nbi.XrefItemId = (int)reader[9];
+                    nbi.ParentItemId = (int)reader[10];
+                    nbi.XmlString = (string)reader[1];
+                    nbi.Lang = (string)reader[2];
+                    nbi.UserId = (int)reader[11];
+                    nbiList.Add(nbi);
+                }
+            }
+
+            return nbiList;
+        }
 
 
     }
@@ -394,6 +498,7 @@ namespace GenXmlSQLprovider
             return param;
 
         }
+
     }
 
 }
