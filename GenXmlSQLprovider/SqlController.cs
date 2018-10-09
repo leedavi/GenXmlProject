@@ -184,20 +184,13 @@ namespace GenXmlSQLprovider
             {
                 throw ex;
             }
+
         }
 
         public override List<NBrightInfo> GetList(NBrightSearchParams searchParams)
         {
 
             var cmdText = "{databaseOwner}{objectQualifier}{TableName}_GetList ";
-            
-            switch (searchParams.SearchType)
-            {
-                case "":
-                    Console.WriteLine("Case 1");
-                    break;
-            }
-
             cmdText = replaceSqlTokens(cmdText);
 
             SqlCommand command = new SqlCommand(cmdText, BaseDA.connection);
@@ -207,7 +200,6 @@ namespace GenXmlSQLprovider
             command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = searchParams.PortalId;
             command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = searchParams.ModuleId;
             command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = searchParams.TableCode;
-            command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = searchParams.SqlFilter;
             command.Parameters.Add(new SqlParameter("@OrderBy", SqlDbType.NVarChar)).Value = searchParams.SqlOrderBy;
             command.Parameters.Add(new SqlParameter("@ReturnLimit", SqlDbType.Int)).Value = searchParams.ReturnLimit;
             command.Parameters.Add(new SqlParameter("@pageNum", SqlDbType.Int)).Value = searchParams.pageNum;
@@ -215,7 +207,73 @@ namespace GenXmlSQLprovider
             command.Parameters.Add(new SqlParameter("@RecordCount", SqlDbType.Int)).Value = searchParams.RecordCount;
             command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = searchParams.Lang;
 
-            return ReadSqlListCommand(command);
+
+            switch (searchParams.SearchType.ToLower())
+            {
+                case "getlist":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = searchParams.SqlFilter;
+                    break;
+                case "byuserid":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.userid = " + searchParams.UserId + " ";
+                    break;
+                case "bykey":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.keydata = '" + searchParams.KeyData + "' ";
+                    break;
+                case "byparentitemid":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.ParentItemId = " + searchParams.ParentItemId + " ";
+                    break;
+                case "byxrefitemid":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.xrefitemid = " + searchParams.XrefItemId + " ";
+                    break;
+                case "bymoduleid":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.moduleid = " + searchParams.ModuleId  + " ";
+                    break;
+                case "byportalid":
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = " and nb1.PortalId = " + searchParams.PortalId + " ";
+                    break;
+
+                case "ALLEXAMPLE":
+                    command.Parameters.Add(new SqlParameter("@ItemId", SqlDbType.Int)).Value = searchParams.ItemId;
+                    command.Parameters.Add(new SqlParameter("@PortalId", SqlDbType.Int)).Value = searchParams.PortalId;
+                    command.Parameters.Add(new SqlParameter("@ModuleId", SqlDbType.Int)).Value = searchParams.ModuleId;
+                    command.Parameters.Add(new SqlParameter("@TableCode", SqlDbType.NVarChar)).Value = searchParams.TableCode;
+                    command.Parameters.Add(new SqlParameter("@KeyData", SqlDbType.NVarChar)).Value = searchParams.KeyData;
+                    command.Parameters.Add(new SqlParameter("@StartDate", SqlDbType.DateTime)).Value = searchParams.StartDate;
+                    command.Parameters.Add(new SqlParameter("@EndDate", SqlDbType.DateTime)).Value = searchParams.EndDate;
+                    command.Parameters.Add(new SqlParameter("@XrefItemId", SqlDbType.Int)).Value = searchParams.XrefItemId;
+                    command.Parameters.Add(new SqlParameter("@ParentItemId", SqlDbType.Int)).Value = searchParams.ParentItemId;
+                    command.Parameters.Add(new SqlParameter("@Lang", SqlDbType.NVarChar)).Value = searchParams.Lang;
+                    command.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int)).Value = searchParams.UserId;
+                    command.Parameters.Add(new SqlParameter("@Filter", SqlDbType.NVarChar)).Value = searchParams.SqlFilter;
+                    command.Parameters.Add(new SqlParameter("@OrderBy", SqlDbType.NVarChar)).Value = searchParams.SqlOrderBy;
+                    command.Parameters.Add(new SqlParameter("@SearchType", SqlDbType.NVarChar)).Value = searchParams.SearchType;
+                    command.Parameters.Add(new SqlParameter("@ReturnLimit", SqlDbType.Int)).Value = searchParams.ReturnLimit;
+                    command.Parameters.Add(new SqlParameter("@pageNum", SqlDbType.Int)).Value = searchParams.pageNum;
+                    command.Parameters.Add(new SqlParameter("@PageSize", SqlDbType.Int)).Value = searchParams.pageSize;
+                    command.Parameters.Add(new SqlParameter("@RecordCount", SqlDbType.Int)).Value = searchParams.RecordCount;
+
+                    foreach (var ed in searchParams.ExtraData)
+                    {
+                        command.Parameters.Add(new SqlParameter("@" + ed.Key, SqlDbType.NVarChar)).Value = ed.Value;
+                    }
+
+                    break;
+            }
+
+            if (cmdText == "")
+            {
+                var rtnErr = new List<NBrightInfo>();
+                var nbi = new NBrightInfo();
+                nbi.XmlString = "<genxml><error>No Command Text Found. SearchType not set to a valid value</error></genxml>";
+                rtnErr.Add(nbi);
+                return rtnErr;
+            }
+            else
+            {
+                return ReadSqlListCommand(command);
+
+            }
+
         }
 
 

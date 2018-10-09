@@ -31,7 +31,7 @@ namespace NBright.GenXmlDB
             pageNum = 0;
             pageSize = 0;
             RecordCount = 0;
-            ExtraData = new List<string>();
+            ExtraData = new Dictionary<string, string>();
         }
 
         public long ItemId { get; set; }
@@ -52,7 +52,7 @@ namespace NBright.GenXmlDB
         public long pageNum { get; set; }
         public long pageSize { get; set; }
         public long RecordCount { get; set; }
-        public List<string> ExtraData { get; set; }
+        public Dictionary<string, string> ExtraData { get; set; }
     }
 
 

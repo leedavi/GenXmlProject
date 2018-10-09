@@ -163,7 +163,21 @@ namespace NBrightXmlDBcmd
             var searchParams = new NBrightSearchParams();
             searchParams.TableCode = "DATA";
             searchParams.PortalId = 1;
+            searchParams.SearchType = "GetList";
             var rtnList = dbCtrl.GetList(searchParams);
+            foreach (var nbi1 in rtnList)
+            {
+                Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
+            }
+
+            Console.WriteLine("Get List DATA ----------------------------------- ");
+
+            searchParams = new NBrightSearchParams();
+            searchParams.TableCode = "DATA";
+            searchParams.PortalId = 1;
+            searchParams.SearchType = "bykey";
+            searchParams.KeyData = "R1";
+            rtnList = dbCtrl.GetList(searchParams);
             foreach (var nbi1 in rtnList)
             {
                 Console.WriteLine(nbi1.ItemId + " " + nbi1.Lang + " " + nbi1.ModifiedDate + " " + nbi1.ModuleId + " " + nbi1.ParentItemId + " " + nbi1.PortalId + " " + nbi1.KeyData + " " + nbi1.TableCode + " " + nbi1.TextData + " " + nbi1.UserId + " " + nbi1.XmlString.Replace(" ", "").Replace(Environment.NewLine, "") + " " + nbi1.XrefItemId + " genxml/textbox/name:" + nbi1.GetXmlProperty("genxml/textbox/name") + Environment.NewLine);
